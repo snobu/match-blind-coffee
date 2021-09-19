@@ -8,7 +8,7 @@ This is the Blind Coffee backend Azure Function called by Microsoft Flow.
 
 ## Sample call
 
-```
+```bash
 $ curl -i https://$AZURE_FUNCTION_URL/api/Pair \
     -H 'x-functions-key: cOdE=='
 
@@ -39,7 +39,7 @@ Server: Kestrel
 
 ## Data model
 
-```
+```bash
 {
   "pair": [
                               // this is an array with either 0 or 2 elemets returned
@@ -48,4 +48,5 @@ Server: Kestrel
     "pairTimeDistance": 60,   // timezone distance between parties in minutes
     "maxOffset": 240          // maximum allowed time distance between parties in minutes
   }
+}
 ```

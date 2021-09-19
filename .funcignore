@@ -5,3 +5,4 @@
 .vscode
 local.settings.json
 test
+coverage
