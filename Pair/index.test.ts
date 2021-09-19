@@ -37,14 +37,14 @@ test('We should get a match for maxoffset 60 minutes', async () => {
     expect(context.res.body.pair).toHaveLength(2);
     expect(context.res.body.pair).toEqual(expect.arrayContaining([
         {
-            "email": "kourtney@kardashian.com",
-            "location": "Denmark",
-            "name": "Kourtney Kardashian"
+            email: 'kourtney@kardashian.com',
+            location: 'Denmark',
+            name: 'Kourtney Kardashian'
         },
         {
-            "email": "rob@kardashian.com",
-            "location": "Greece",
-            "name": "Rob Kardashian"
+            email: 'rob@kardashian.com',
+            location: 'Greece',
+            name: 'Rob Kardashian'
         }
     ]));
 });
