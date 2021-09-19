@@ -1,3 +1,4 @@
+.secrets
 *.js.map
 *.ts
 .git*

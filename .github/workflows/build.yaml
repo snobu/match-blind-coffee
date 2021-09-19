@@ -1,4 +1,4 @@
-name: Build and publish to Azure Functions
+name: Build, lint and test
 
 on:
   push:
@@ -11,7 +11,7 @@ on:
     - master
 
 jobs:
-  build:
+  build-and-publish:
 
     runs-on: ubuntu-latest
 
@@ -35,3 +35,9 @@ jobs:
       run: npm test
       env:
         CI: true
+    - uses: Azure/functions-action@v1
+      id: publish
+      with:
+        app-name: ${{ env.FUNCTIONAPP_NAME }}
+        package: .
+        publish-profile: ${{ secrets.PUBLISH_PROFILE }}
