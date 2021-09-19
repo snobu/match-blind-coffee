@@ -34,7 +34,8 @@ Server: Kestrel
     "pairTimeDistance": 60,
     "maxOffset": 240
   }
-  ```
+}
+```
 
 ## Data model
 
