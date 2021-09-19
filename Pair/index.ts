@@ -34,7 +34,7 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
         pair.map(i => (i.Location = i.Location === 'UK' ? 'GB' : i.Location));
         pair.map(i => (i.Location = i.Location === 'USA' ? 'US' : i.Location));
 
-        const locations =  [
+        const locations = [
             getCode(pair[0]['Location'].trim()) || pair[0]['Location'],
             getCode(pair[1]['Location'].trim()) || pair[1]['Location']
         ];
@@ -59,15 +59,15 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
                     maxOffset: maxOffset
                 }
             }
-        }
+        };
     }
     else {
-        let finalPair = pair.map(item => {
+        const finalPair = pair.map(item => {
             return {
                 name: item['PartitionKey'],
                 email: item['RowKey'],
                 location: item['Location']
-            }
+            };
         });
 
         context.res = {
