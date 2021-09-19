@@ -1,0 +1,34 @@
+{
+  "bindings": [
+    {
+      "authLevel": "function",
+      "type": "httpTrigger",
+      "direction": "in",
+      "name": "req",
+      "methods": [
+        "get",
+        "post"
+      ]
+    },
+    {
+      "name": "history",
+      "type": "table",
+      "tableName": "Pairs",
+      "connection": "SophieStorageAccount",
+      "direction": "in"
+    },
+    {
+      "name": "entries",
+      "type": "table",
+      "tableName": "BlindCoffeeRegistrations",
+      "connection": "SophieStorageAccount",
+      "direction": "in"
+    },
+    {
+      "type": "http",
+      "direction": "out",
+      "name": "res"
+    }
+  ],
+  "scriptFile": "../dist/Pair/index.js"
+}

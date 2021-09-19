@@ -1,0 +1,1 @@
+This is the Blind Coffee backend Azure Function called by Microsoft Flow.
