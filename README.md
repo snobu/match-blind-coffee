@@ -39,7 +39,7 @@ Server: Kestrel
 
 ## Data model
 
-```bash
+```json
 {
   "pair": [
                               // this is an array with either 0 or 2 elemets returned
