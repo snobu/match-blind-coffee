@@ -15,7 +15,7 @@ module.exports = {
             {
                 PartitionKey: 'Khloe Kardashian',
                 RowKey: 'khloe@kardashian.com',
-                Location: 'Russia'
+                Location: 'Japan'
             },
             {
                 PartitionKey: 'Rob Kardashian',

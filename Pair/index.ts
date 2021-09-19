@@ -41,7 +41,7 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
 
         const timezones = [
             getTimezonesForCountry(locations[0])[0].utcOffset,
-            getTimezonesForCountry(locations[0])[0].utcOffset
+            getTimezonesForCountry(locations[1])[0].utcOffset
         ];
 
         pairTimeDistance = Math.abs(timezones[1] - timezones[0]);

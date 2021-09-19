@@ -63,7 +63,7 @@ test('Do not match pair in history', async () => {
         {
             PartitionKey: 'Khloe Kardashian',
             RowKey: 'khloe@kardashian.com',
-            Location: 'Sweden'
+            Location: 'Japan'
         }
     ];
 
