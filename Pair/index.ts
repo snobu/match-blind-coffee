@@ -38,9 +38,6 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
         const location0 = getCode(pair[0]['Location'].trim()) || pair[0]['Location'];
         const location1 = getCode(pair[1]['Location'].trim()) || pair[1]['Location'];
 
-        context.log(pair[0]['Location'], location0);
-        context.log(pair[1]['Location'], location1);
-
         let tz0 = getTimezonesForCountry(location0)[0].utcOffset;
         let tz1 = getTimezonesForCountry(location1)[0].utcOffset;
 
