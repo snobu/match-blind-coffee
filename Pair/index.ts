@@ -7,9 +7,10 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
     // Default to 240 minutes if not sent over query parameter
     const maxOffset = req.query?.maxoffset || 240;
     let pairTimeDistance = 0;
-    let pair: Array<any> = [];
+    let pair: Array<any> | null = [];
     let pairIsFound = false;
     let passes = 0;
+    let rollDiceAgain = false;
 
     while (!pairIsFound && passes < 1024) {
         passes++;
@@ -19,12 +20,36 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
         const swipeLeft = pair[0]['RowKey'] + pair[1]['RowKey'];
         const swipeRight = pair[1]['RowKey'] + pair[0]['RowKey'];
 
+        // for length of pair array do
+        for (let i = 0; i < pair.length; i++) {
+            // Table entity has '08/2021' as date, let's rewrite to '2021-08'
+            // so Date.parse() can parse it
+            const matchedOn = pair[i]['MatchedOn'].split('/').reverse().join('-');
+            if (isNaN(Date.parse(matchedOn))) {
+                throw(`MatchedOn can't be parsed as Date: Got '${pair[i]['MatchedOn']}' for RowKey '${pair[i]['RowKey']}'`);
+            }
+            
+            const distanceFromTodayInDays = Math.floor((Date.now() - Date.parse(matchedOn)) / (1000 * 60 * 60 * 24));
+            if (distanceFromTodayInDays < 40) {
+                context.log('[DEBUG] Member has been matched in the past 60 days');
+                rollDiceAgain = true;
+                break;
+            }
+        }
+
+        context.log('[DEBUG] Neither pair member has been matched in the past 60 days');
+
+        if (rollDiceAgain) {
+            pair = null;
+            break;
+        }
+
         // Find match in history
         const pairIsFoundInHistory = history.some((item: string) =>
             item['PartitionKey'].toLowerCase() === swipeLeft.toLowerCase() ||
             item['RowKey'].toLowerCase() === swipeRight.toLowerCase());
 
-        context.log('Pair is found in history: ', pairIsFoundInHistory);
+        context.log('[DEBUG] Pair is found in history:', pairIsFoundInHistory);
         if (pairIsFoundInHistory) {
             pair = null;
             break;
@@ -54,7 +79,7 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
         context.res = {
             status: 200,
             body: {
-                pair: [],
+                pair: {},
                 debug: {
                     maxOffset: maxOffset
                 }
@@ -62,18 +87,19 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
         };
     }
     else {
-        const finalPair = pair.map(item => {
-            return {
-                name: item['PartitionKey'],
-                email: item['RowKey'],
-                location: item['Location']
-            };
-        });
+        const finalFlatObject = {
+            name1: pair[0]['PartitionKey'],
+            email1: pair[0]['RowKey'],
+            location1: pair[0]['Location'],
+            name2: pair[1]['PartitionKey'],
+            email2: pair[1]['RowKey'],
+            location2: pair[1]['Location']
+        };
 
         context.res = {
             status: 200,
             body: {
-                pair: finalPair,
+                pair: finalFlatObject,
                 debug: {
                     pairTimeDistance: pairTimeDistance,
                     maxOffset: maxOffset
