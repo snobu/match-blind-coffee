@@ -6,6 +6,7 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
     // Maximum UTC offset we should tolerate for a match
     // Default to 240 minutes if not sent over query parameter
     const maxOffset = req.query?.maxoffset || 240;
+    const freshness = req.query?.freshness || 28;
     let pairTimeDistance = 0;
     let pair: Array<any> | null = [];
     let pairIsFound = false;
@@ -30,14 +31,14 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
             }
             
             const distanceFromTodayInDays = Math.floor((Date.now() - Date.parse(matchedOn)) / (1000 * 60 * 60 * 24));
-            if (distanceFromTodayInDays < 40) {
-                context.log('[DEBUG] Member has been matched in the past 60 days');
+            if (distanceFromTodayInDays < freshness) {
+                context.log(`[DEBUG] Member has been matched in the past ${freshness} days`);
                 rollDiceAgain = true;
                 break;
             }
         }
 
-        context.log('[DEBUG] Neither pair member has been matched in the past 60 days');
+        context.log(`[DEBUG] Neither pair member has been matched in the past ${freshness} days`);
 
         if (rollDiceAgain) {
             pair = null;
@@ -81,7 +82,8 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
             body: {
                 pair: {},
                 debug: {
-                    maxOffset: maxOffset
+                    maxOffset: maxOffset,
+                    freshness: freshness
                 }
             }
         };
@@ -102,7 +104,8 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
                 pair: finalFlatObject,
                 debug: {
                     pairTimeDistance: pairTimeDistance,
-                    maxOffset: maxOffset
+                    maxOffset: maxOffset,
+                    freshness: freshness
                 }
             }
         };

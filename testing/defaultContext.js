@@ -5,22 +5,26 @@ module.exports = {
             {
                 PartitionKey: 'Kim Kardashian',
                 RowKey: 'kim@kardashian.com',
-                Location: 'United States'
+                Location: 'United States',
+                MatchedOn: '08/2021'
             },
             {
                 PartitionKey: 'Kourtney Kardashian',
                 RowKey: 'kourtney@kardashian.com',
-                Location: 'Denmark'
+                Location: 'Denmark',
+                MatchedOn: '08/2021'
             },
             {
                 PartitionKey: 'Khloe Kardashian',
                 RowKey: 'khloe@kardashian.com',
-                Location: 'Japan'
+                Location: 'Japan',
+                MatchedOn: '08/2021'
             },
             {
                 PartitionKey: 'Rob Kardashian',
                 RowKey: 'rob@kardashian.com',
-                Location: 'Greece'
+                Location: 'Greece',
+                MatchedOn: '08/2021'
             }
         ],
         history: [
