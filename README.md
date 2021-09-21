@@ -19,18 +19,14 @@ Content-Type: text/plain; charset=utf-8
 Server: Kestrel
 
 {
-  "pair": [
-    {
-      "name": "Kim Kardashian",
-      "email": "kim@kardashian.com"
-      "location": "Netherlands "
-    },
-    {
-      "name": "Khloe Kardashian",
-      "email": "khloe@kardashian.com"
-      "location": "Germany"
-    }
-  ],
+  "pair": {
+      "name1": "Kim Kardashian",
+      "email1": "kim@kardashian.com"
+      "location1": "Netherlands "
+      "name2": "Khloe Kardashian",
+      "email2": "khloe@kardashian.com"
+      "location2": "Germany"
+  },
   "debug": {
     "pairTimeDistance": 60,
     "maxOffset": 240,
@@ -43,9 +39,7 @@ Server: Kestrel
 
 ```
 {
-  "pair": [
-                              // this is an array with either 0 or 2 elemets returned
-  ],
+  "pair": { },                 // pair flat object with multiple properties (see call sample above)
   "debug": {
     "pairTimeDistance": 60,   // timezone distance between parties in minutes
     "maxOffset": 240          // maximum allowed time distance between parties in minutes
