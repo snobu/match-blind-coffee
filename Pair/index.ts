@@ -53,7 +53,6 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
         context.log('[DEBUG] Pair is found in history:', pairIsFoundInHistory);
         if (pairIsFoundInHistory) {
             pair = null;
-            break;
         }
 
         // Deal with ISO notation bullshit for country names
