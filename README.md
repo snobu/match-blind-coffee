@@ -47,3 +47,14 @@ Server: Kestrel
   }
 }
 ```
+
+We signal end of pairs by returning `HTTP 417` to the caller -
+```
+HTTP/1.1 417 Expectation Failed
+
+Expectation failed. No pair found.
+We may or may not have reached END OF PAIRS.
+```
+
+Since this isn't deterministic as of right now, you should retry calling this function a few times.
+If you still get `HTTP 417` it's probably safe to assume end of pairs.
