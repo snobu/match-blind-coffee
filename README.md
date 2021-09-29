@@ -39,7 +39,14 @@ Server: Kestrel
 
 ```
 {
-  "pair": { },                 // pair flat object with multiple properties (see call sample above)
+  "pair": {                   // pair flat object with multiple properties (see call sample above)
+      "name1": string,
+      "email1": string,
+      "location1": string,
+      "name2": string,
+      "email2": string,
+      "location2": string
+  },
   "debug": {
     "pairTimeDistance": 60,   // timezone distance between parties in minutes
     "maxOffset": 240          // maximum allowed time distance between parties in minutes
