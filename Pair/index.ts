@@ -13,7 +13,7 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
     let passes = 0;
     let rollDiceAgain = false;
 
-    while (!pairIsFound && passes < 1024) {
+    while (!pairIsFound && passes < 8192) {
         passes++;
         pair = entries.sort(() => Math.random() - Math.random()).slice(0, 2);
 
@@ -27,18 +27,18 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
             // so Date.parse() can parse it
             const matchedOn = pair[i]['MatchedOn'].split('/').reverse().join('-');
             if (isNaN(Date.parse(matchedOn))) {
-                throw(`MatchedOn can't be parsed as Date: Got '${pair[i]['MatchedOn']}' for RowKey '${pair[i]['RowKey']}'`);
+                throw (`MatchedOn can't be parsed as Date: Got '${pair[i]['MatchedOn']}' for RowKey '${pair[i]['RowKey']}'`);
             }
-            
+
             const distanceFromTodayInDays = Math.floor((Date.now() - Date.parse(matchedOn)) / (1000 * 60 * 60 * 24));
             if (distanceFromTodayInDays < freshness) {
-                context.log(`[DEBUG] Member has been matched in the past ${freshness} days`);
+                // context.log(`[DEBUG] Member has been matched in the past ${freshness} days`);
                 rollDiceAgain = true;
                 break;
             }
         }
 
-        context.log(`[DEBUG] Neither pair member has been matched in the past ${freshness} days`);
+        // context.log(`[DEBUG] Neither pair member has been matched in the past ${freshness} days`);
 
         if (rollDiceAgain) {
             pair = null;
@@ -50,11 +50,11 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
             item['PartitionKey'].toLowerCase() === swipeLeft.toLowerCase() ||
             item['RowKey'].toLowerCase() === swipeRight.toLowerCase());
 
-        context.log('[DEBUG] Pair is found in history:', pairIsFoundInHistory);
+        // context.log('[DEBUG] Pair is found in history:', pairIsFoundInHistory);
         if (pairIsFoundInHistory) {
-            pair = null;
+            rollDiceAgain = true;
+            break;
         }
-
         // Deal with ISO notation bullshit for country names
         pair.map(i => (i.Location = i.Location === 'UK' ? 'GB' : i.Location));
         pair.map(i => (i.Location = i.Location === 'USA' ? 'US' : i.Location));
@@ -77,13 +77,10 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
 
     if (pair == null) {
         context.res = {
-            status: 200,
+            status: 417,
             body: {
-                pair: {},
-                debug: {
-                    maxOffset: maxOffset,
-                    freshness: freshness
-                }
+                message: 'Expectation failed. No pair found. ' +
+                    'We may or may not have reached END OF PAIRS.'
             }
         };
     }
