@@ -12,7 +12,7 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
     let pairIsFound = false;
     let passes = 0;
 
-    while (!pairIsFound && passes < 1024) {
+    while (!pairIsFound && passes < 4096) {
         let rollDiceAgain = false;
         passes++;
         pair = entries.sort(() => Math.random() - Math.random()).slice(0, 2);
