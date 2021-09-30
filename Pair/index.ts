@@ -6,7 +6,7 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
     // Maximum UTC offset we should tolerate for a match
     // Default to 240 minutes if not sent over query parameter
     const maxOffset = req.query?.maxoffset || 240;
-    const freshness = req.query?.freshness || 28;
+    const freshness = req.query?.freshness || 30;
     let pairTimeDistance = 0;
     let pair: Array<any> | null = null;
     let pairIsFound = false;

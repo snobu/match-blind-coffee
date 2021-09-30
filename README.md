@@ -5,7 +5,7 @@ This is the Blind Coffee backend Azure Function called by Microsoft Flow.
 | Parameter   | Description | Default value |
 | ----------- | ----------- | ------------- |
 | `maxoffset` | Maximum allowed time distance between parties in minutes | `240` |
-| `freshness` | None of the members have a match in the past 28 days | `28` |
+| `freshness` | None of the members have a match in the past 28 days | `30` |
 
 ## Sample call
 
