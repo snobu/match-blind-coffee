@@ -35,9 +35,11 @@ test('We should get a match for maxoffset 60 minutes', async () => {
     expect(context.res.body.pair).toBeTruthy();
 });
 
-test('Do not match pair in history', async () => {
+test('Do not match pair if any of the members have already been matched in the past 9000 days', async () => {
     const request = {
-        query: {}
+        query: {
+            freshness: 9000
+        }
     };
 
     context.bindings.entries = [
@@ -56,5 +58,6 @@ test('Do not match pair in history', async () => {
     ];
 
     await httpTrigger(context, request, context.bindings.history, context.bindings.entries);
-    expect(context.res.body.pair).toEqual({});
+    expect(context.res.status).toBe(417);
+
 });
