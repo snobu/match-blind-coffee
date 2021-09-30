@@ -13,7 +13,7 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
     let passes = 0;
     let rollDiceAgain = false;
 
-    while (!pairIsFound && passes < 8192) {
+    while (!pairIsFound && passes < 1024) {
         passes++;
         pair = entries.sort(() => Math.random() - Math.random()).slice(0, 2);
 
@@ -30,19 +30,19 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
                 throw (`MatchedOn can't be parsed as Date: Got '${pair[i]['MatchedOn']}' for RowKey '${pair[i]['RowKey']}'`);
             }
 
-            const distanceFromTodayInDays = Math.floor((Date.now() - Date.parse(matchedOn)) / (1000 * 60 * 60 * 24));
+            const distanceFromTodayInDays = Math.floor((Date.now() - Date.parse(matchedOn)) / (1000 * 60 * 60 * 24));            
             if (distanceFromTodayInDays < freshness) {
-                // context.log(`[DEBUG] Member has been matched in the past ${freshness} days`);
+                context.log(`[DEBUG] [PASS ${passes}] Member has been matched in the past ${freshness} days.`,
+                    `MatchedOn parsed is '{matchedOn}', unparsed '${pair[i]['MatchedOn']}'`);
                 rollDiceAgain = true;
                 break;
             }
         }
 
-        // context.log(`[DEBUG] Neither pair member has been matched in the past ${freshness} days`);
+        context.log(`[DEBUG] [PASS ${passes}] Neither pair member has been matched in the past ${freshness} days`);
 
         if (rollDiceAgain) {
-            pair = null;
-            break;
+            continue;
         }
 
         // Find match in history
@@ -50,11 +50,12 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
             item['PartitionKey'].toLowerCase() === swipeLeft.toLowerCase() ||
             item['RowKey'].toLowerCase() === swipeRight.toLowerCase());
 
-        // context.log('[DEBUG] Pair is found in history:', pairIsFoundInHistory);
+        context.log(`[DEBUG] [PASS ${passes}] Pair is found in history:`, pairIsFoundInHistory,
+            `(${swipeLeft.substring(0, 3).toLowerCase()}...-${swipeRight.substring(0, 3).toLowerCase()}...)`);
         if (pairIsFoundInHistory) {
-            rollDiceAgain = true;
-            break;
+            continue;
         }
+
         // Deal with ISO notation bullshit for country names
         pair.map(i => (i.Location = i.Location === 'UK' ? 'GB' : i.Location));
         pair.map(i => (i.Location = i.Location === 'USA' ? 'US' : i.Location));
