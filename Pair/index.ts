@@ -33,7 +33,7 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
             const distanceFromTodayInDays = Math.floor((Date.now() - Date.parse(matchedOn)) / (1000 * 60 * 60 * 24));            
             if (distanceFromTodayInDays < freshness) {
                 context.log(`[DEBUG] [PASS ${passes}] Member has been matched in the past ${freshness} days.`,
-                    `MatchedOn parsed is '{matchedOn}', unparsed '${pair[i]['MatchedOn']}'`);
+                    `MatchedOn parsed is '${matchedOn}', unparsed '${pair[i]['MatchedOn']}'`);
                 rollDiceAgain = true;
                 break;
             }
