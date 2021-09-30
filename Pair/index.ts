@@ -8,12 +8,12 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
     const maxOffset = req.query?.maxoffset || 240;
     const freshness = req.query?.freshness || 28;
     let pairTimeDistance = 0;
-    let pair: Array<any> | null = [];
+    let pair: Array<any> | null = null;
     let pairIsFound = false;
     let passes = 0;
-    let rollDiceAgain = false;
 
     while (!pairIsFound && passes < 1024) {
+        let rollDiceAgain = false;
         passes++;
         pair = entries.sort(() => Math.random() - Math.random()).slice(0, 2);
 
@@ -21,7 +21,6 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
         const swipeLeft = pair[0]['RowKey'] + pair[1]['RowKey'];
         const swipeRight = pair[1]['RowKey'] + pair[0]['RowKey'];
 
-        // for length of pair array do
         for (let i = 0; i < pair.length; i++) {
             // Table entity has '08/2021' as date, let's rewrite to '2021-08'
             // so Date.parse() can parse it
@@ -30,7 +29,7 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
                 throw (`MatchedOn can't be parsed as Date: Got '${pair[i]['MatchedOn']}' for RowKey '${pair[i]['RowKey']}'`);
             }
 
-            const distanceFromTodayInDays = Math.floor((Date.now() - Date.parse(matchedOn)) / (1000 * 60 * 60 * 24));            
+            const distanceFromTodayInDays = Math.floor((Date.now() - Date.parse(matchedOn)) / (1000 * 60 * 60 * 24));
             if (distanceFromTodayInDays < freshness) {
                 context.log(`[DEBUG] [PASS ${passes}] Member has been matched in the past ${freshness} days.`,
                     `MatchedOn parsed is '${matchedOn}', unparsed '${pair[i]['MatchedOn']}'`);
@@ -38,8 +37,6 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
                 break;
             }
         }
-
-        context.log(`[DEBUG] [PASS ${passes}] Neither pair member has been matched in the past ${freshness} days`);
 
         if (rollDiceAgain) {
             pair = null;
@@ -53,6 +50,7 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
 
         context.log(`[DEBUG] [PASS ${passes}] Pair is found in history:`, pairIsFoundInHistory,
             `(${swipeLeft.substring(0, 3).toLowerCase()}...-${swipeRight.substring(0, 3).toLowerCase()}...)`);
+
         if (pairIsFoundInHistory) {
             pair = null;
             continue;
