@@ -42,6 +42,7 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
         context.log(`[DEBUG] [PASS ${passes}] Neither pair member has been matched in the past ${freshness} days`);
 
         if (rollDiceAgain) {
+            pair = null;
             continue;
         }
 
@@ -53,6 +54,7 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
         context.log(`[DEBUG] [PASS ${passes}] Pair is found in history:`, pairIsFoundInHistory,
             `(${swipeLeft.substring(0, 3).toLowerCase()}...-${swipeRight.substring(0, 3).toLowerCase()}...)`);
         if (pairIsFoundInHistory) {
+            pair = null;
             continue;
         }
 
