@@ -33,7 +33,7 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
 
             const distanceFromTodayInDays = Math.floor((Date.now() - Date.parse(matchedOn)) / (1000 * 60 * 60 * 24));
 
-            if (daysSinceMatched > distanceFromTodayInDays) {
+            if (daysSinceMatched < distanceFromTodayInDays) {
                 // Member is pair-able
             }
             else {
