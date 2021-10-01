@@ -4,8 +4,8 @@ This is the Blind Coffee backend Azure Function called by Microsoft Flow.
 
 | Parameter   | Description | Default value |
 | ----------- | ----------- | ------------- |
-| `maxoffset` | Maximum allowed time distance between parties in minutes | `240` |
-| `freshness` | None of the members have a match in the past 28 days | `31` |
+| `maxOffset` | Maximum allowed time distance between parties in minutes | `240` |
+| `daysSinceMatched` | None of the members have a match in the past XX days | `28` |
 
 ## Sample call
 
@@ -30,7 +30,7 @@ Server: Kestrel
   "debug": {
     "pairTimeDistance": 60,
     "maxOffset": 240,
-    "freshness" 28
+    "daysSinceMatched" 28
   }
 }
 ```
@@ -50,7 +50,7 @@ Server: Kestrel
   "debug": {
     "pairTimeDistance": 60,   // timezone distance between parties in minutes
     "maxOffset": 240          // maximum allowed time distance between parties in minutes
-    "freshness": 28           // none of the members have a match in the past 28 days
+    "daysSinceMatched": 28    // none of the members have a match in the past 28 days
   }
 }
 ```

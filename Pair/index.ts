@@ -5,19 +5,21 @@ import { getCode } from 'countrynames';
 const httpTrigger: AzureFunction = async function (context: Context, req: HttpRequest, history: Array<any>, entries: Array<any>): Promise<void> {
     // Maximum UTC offset we should tolerate for a match
     // Default to 240 minutes if not sent over query parameter
-    const maxOffset = parseInt(req.query?.maxoffset) || 240;
-    const freshness = parseInt(req.query?.freshness) || 31;
+    const maxOffset = parseInt(req.query?.maxOffset) || 240;
+    const daysSinceMatched = parseInt(req.query?.daysSinceMatched) || 28;
     let pairTimeDistance = 0;
     let pair: Array<any> | null = null;
     let pairIsFound = false;
     let passes = 0;
 
     while (!pairIsFound && passes < 4096) {
-        let rollDiceAgain = false;
         passes++;
+
+        // Pick a random pair
         pair = entries.sort(() => Math.random() - Math.random()).slice(0, 2);
 
-        // Check if pair has been paired before
+        // Check if any member of the pair has been paired with another member
+        // in the last daysSinceMatched days
         const swipeLeft = pair[0]['RowKey'] + pair[1]['RowKey'];
         const swipeRight = pair[1]['RowKey'] + pair[0]['RowKey'];
 
@@ -30,18 +32,19 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
             }
 
             const distanceFromTodayInDays = Math.floor((Date.now() - Date.parse(matchedOn)) / (1000 * 60 * 60 * 24));
-            context.log('Distance from today in days:', distanceFromTodayInDays);
 
-            if (distanceFromTodayInDays > freshness) {
-                context.log(`[DEBUG] [PASS ${passes}] Member '${pair[i]['RowKey'].substring(0, 3).toLowerCase()}...' has been matched in the past ${freshness} days.`,
+            if (distanceFromTodayInDays > daysSinceMatched) {
+                // Member is pair-able
+            }
+            else {
+                context.log(`[DEBUG] [PASS ${passes}] Member '${pair[i]['RowKey'].substring(0, 3).toLowerCase()}...' has been matched in the past ${daysSinceMatched} days.`,
                     `MatchedOn parsed is '${matchedOn}', unparsed '${pair[i]['MatchedOn']}'`);
-                rollDiceAgain = true;
+                pair = null;
                 break;
             }
         }
 
-        if (rollDiceAgain) {
-            pair = null;
+        if (pair === null) {
             continue;
         }
 
@@ -50,10 +53,10 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
             item['PartitionKey'].toLowerCase() === swipeLeft.toLowerCase() ||
             item['RowKey'].toLowerCase() === swipeRight.toLowerCase());
 
-        context.log(`[DEBUG] [PASS ${passes}] Pair is found in history:`, pairIsFoundInHistory,
-            `(${swipeLeft.substring(0, 3).toLowerCase()}...-${swipeRight.substring(0, 3).toLowerCase()}...)`);
-
+            
         if (pairIsFoundInHistory) {
+            context.log(`[DEBUG] [PASS ${passes}] Pair is found in history:`, pairIsFoundInHistory,
+                `(${swipeLeft.substring(0, 3).toLowerCase()}...-${swipeRight.substring(0, 3).toLowerCase()}...)`);
             pair = null;
             continue;
         }
@@ -78,7 +81,7 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
         }
     }
 
-    if (pair == null) {
+    if (pair === null) {
         context.res = {
             status: 417,
             body: {
@@ -104,7 +107,7 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
                 debug: {
                     pairTimeDistance: pairTimeDistance,
                     maxOffset: maxOffset,
-                    freshness: freshness
+                    daysSinceMatched: daysSinceMatched
                 }
             }
         };
