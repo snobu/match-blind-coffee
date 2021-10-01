@@ -5,8 +5,8 @@ import { getCode } from 'countrynames';
 const httpTrigger: AzureFunction = async function (context: Context, req: HttpRequest, history: Array<any>, entries: Array<any>): Promise<void> {
     // Maximum UTC offset we should tolerate for a match
     // Default to 240 minutes if not sent over query parameter
-    const maxOffset = req.query?.maxoffset || 240;
-    const freshness = req.query?.freshness || 31;
+    const maxOffset = parseInt(req.query?.maxoffset) || 240;
+    const freshness = parseInt(req.query?.freshness) || 31;
     let pairTimeDistance = 0;
     let pair: Array<any> | null = null;
     let pairIsFound = false;
@@ -30,7 +30,9 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
             }
 
             const distanceFromTodayInDays = Math.floor((Date.now() - Date.parse(matchedOn)) / (1000 * 60 * 60 * 24));
-            if (distanceFromTodayInDays < freshness) {
+            context.log('Distance from today in days:', distanceFromTodayInDays);
+
+            if (distanceFromTodayInDays > freshness) {
                 context.log(`[DEBUG] [PASS ${passes}] Member '${pair[i]['RowKey'].substring(0, 3).toLowerCase()}...' has been matched in the past ${freshness} days.`,
                     `MatchedOn parsed is '${matchedOn}', unparsed '${pair[i]['MatchedOn']}'`);
                 rollDiceAgain = true;
