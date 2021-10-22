@@ -107,7 +107,8 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
                 debug: {
                     pairTimeDistance: pairTimeDistance,
                     maxOffset: maxOffset,
-                    daysSinceMatched: daysSinceMatched
+                    daysSinceMatched: daysSinceMatched,
+                    willThisStillWork: 1
                 }
             }
         };
